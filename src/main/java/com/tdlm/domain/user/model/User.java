@@ -1,9 +1,7 @@
 package com.tdlm.domain.user.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.tdlm.domain.todo.model.ToDo;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,6 +33,9 @@ public class User implements UserDetails {
     private String email;
 
     private Boolean isAdmin;
+
+    @OneToMany(mappedBy = "user")
+    private ArrayList<ToDo> listOfToDo;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

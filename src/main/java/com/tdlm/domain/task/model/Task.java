@@ -3,6 +3,7 @@ package com.tdlm.domain.task.model;
 import com.tdlm.domain.listener.AuditListener;
 import com.tdlm.domain.listener.Auditable;
 import com.tdlm.domain.task.enumeration.TaskStatus;
+import com.tdlm.domain.todo.model.ToDo;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,4 +31,7 @@ public class Task implements Auditable {
     private Date createdAt;
 
     private Date updatedAt;
+
+    @ManyToOne
+    private ToDo toDo;
 }

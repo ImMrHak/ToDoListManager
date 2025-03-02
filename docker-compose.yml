@@ -1,0 +1,22 @@
+services:
+  mysql:
+    container_name: mysql-tdlm-bsn
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: tdlm
+      MYSQL_USER: tdlm
+      MYSQL_PASSWORD: tdlm
+    ports:
+      - "3306:3306"
+    networks:
+      - tdlm-net
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+networks:
+  tdlm-net:
+    driver: bridge
+
+volumes:
+  mysql_data:

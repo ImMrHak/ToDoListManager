@@ -1,6 +1,6 @@
 package com.tdlm.adapter.web.actions;
 
-import com.tdlm.application.user.UserService;
+import com.tdlm.application.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

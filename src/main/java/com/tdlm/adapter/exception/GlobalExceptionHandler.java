@@ -13,8 +13,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> userNotFoundException(UserNotFoundException e) {
-        Map<String, Object> response = ResponseWrapper.error("User not found");
+        Map<String, Object> response = ResponseWrapper.error("User not found", HttpStatus.NOT_FOUND);
         // ADDING LOGS HERE FOR THE DATABASE !
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

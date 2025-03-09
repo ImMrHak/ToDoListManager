@@ -1,10 +1,10 @@
-package com.tdlm.application.task;
+package com.tdlm.application.task.service;
 
 import com.tdlm.domain.task.repository.TaskDomainRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class TaskServiceImp implements TaskService {
     private final TaskDomainRepository taskDomainRepository;

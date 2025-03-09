@@ -1,10 +1,10 @@
-package com.tdlm.application.todo;
+package com.tdlm.application.todo.service;
 
 import com.tdlm.domain.todo.repository.ToDoDomainRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class ToDoServiceImp implements ToDoService {
     private final ToDoDomainRepository toDoDomainRepository;

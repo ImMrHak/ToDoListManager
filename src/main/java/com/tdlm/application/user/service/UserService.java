@@ -1,9 +1,10 @@
-package com.tdlm.application.user;
+package com.tdlm.application.user.service;
 
 import com.tdlm.application.user.record.request.LoginDTO;
 import com.tdlm.application.user.record.response.TokenDTO;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
 
-public interface UserService extends UserDetailsService {
+@Service
+public interface UserService {
     TokenDTO authenticateUser(LoginDTO loginDTO);
 }

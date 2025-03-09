@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,6 +34,6 @@ public class ToDo implements Auditable {
     @ManyToOne
     private User user;
 
-    @OneToMany(mappedBy = "toDo")
-    private ArrayList<Task> listOfTask;
+    @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL)
+    private List<Task> listOfTask = new ArrayList<>();
 }

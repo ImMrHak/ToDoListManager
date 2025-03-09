@@ -22,7 +22,7 @@ public class TdlmApplication {
     @Bean
     CommandLineRunner seedDatabase(UserDomainRepository userDomainRepository, ToDoDomainRepository toDoDomainRepository, TaskDomainRepository taskDomainRepository, PasswordEncoder passwordEncoder){
         return args -> {
-            userDomainRepository.save(User.builder().email("admin@tdlm.com").firstName("ImMr").lastName("Hak").username("immrhak").password(passwordEncoder.encode("test123P")).isAdmin(true).build());
+                userDomainRepository.save(User.builder().email("admin@tdlm.com").firstName("ImMr").lastName("Hak").username("immrhak").password(passwordEncoder.encode("test123P")).isAdmin(true).build());
         };
     }
 }

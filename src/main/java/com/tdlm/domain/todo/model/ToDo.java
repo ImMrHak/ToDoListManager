@@ -1,37 +1,42 @@
 package com.tdlm.domain.todo.model;
 
-import com.tdlm.domain.listener.AuditListener;
-import com.tdlm.domain.listener.Auditable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tdlm.domain.task.model.Task;
 import com.tdlm.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditListener.class)
 @Builder
-public class ToDo implements Auditable {
+public class ToDo {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long toDoId;
+    @UuidGenerator
+    private UUID toDoId;
 
     private String title;
 
     private String description;
 
-    private Date createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL)

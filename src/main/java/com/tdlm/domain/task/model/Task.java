@@ -1,25 +1,28 @@
 package com.tdlm.domain.task.model;
 
-import com.tdlm.domain.listener.AuditListener;
-import com.tdlm.domain.listener.Auditable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tdlm.domain.task.enumeration.TaskStatus;
 import com.tdlm.domain.todo.model.ToDo;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditListener.class)
 @Builder
-public class Task implements Auditable {
+public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long taskId;
+    @UuidGenerator
+    private UUID taskId;
 
     private String taskName;
 
@@ -28,10 +31,12 @@ public class Task implements Auditable {
     @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
 
-    private Date createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne @JsonIgnore
     private ToDo toDo;
 }

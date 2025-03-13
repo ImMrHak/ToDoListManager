@@ -1,31 +1,28 @@
 package com.tdlm.domain.user.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tdlm.domain.listener.AuditListener;
-import com.tdlm.domain.listener.Auditable;
 import com.tdlm.domain.todo.model.ToDo;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditListener.class)
 @Builder
-public class User implements UserDetails, Auditable {
+public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long userId;
+    @UuidGenerator
+    private UUID userId;
 
     private String username;
 
@@ -37,9 +34,11 @@ public class User implements UserDetails, Auditable {
 
     private String email;
 
-    private Date createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     private Boolean isAdmin;
 

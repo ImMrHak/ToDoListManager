@@ -39,6 +39,19 @@ services:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
 
+  redis-commander:
+    container_name: redis-commander-tdlm
+    image: rediscommander/redis-commander:latest
+    ports:
+      - "8081:8081"  # Access Redis Commander UI at http://localhost:8081
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - tdlm-net
+    depends_on:
+      - redis
+
 networks:
   tdlm-net:
     driver: bridge

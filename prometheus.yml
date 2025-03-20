@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s  # How often to scrape targets
+  evaluation_interval: 15s  # How often to evaluate rules
+
+scrape_configs:
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8080']  # Access Spring Boot from Docker
+    basic_auth:
+      username: 'admin'  # If authentication is enabled
+      password: 'password'  # Change this accordingly

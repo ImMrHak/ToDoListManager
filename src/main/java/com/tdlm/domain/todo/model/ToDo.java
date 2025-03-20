@@ -11,7 +11,6 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,9 +35,12 @@ public class ToDo {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne @JsonIgnore
-    private User user;
+    @ManyToOne
+    private User owner;
 
-    @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "listOfCollabToDo", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<User> collaborators = new ArrayList<>();
+
+    @OneToMany(mappedBy = "toDo", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Task> listOfTask = new ArrayList<>();
 }

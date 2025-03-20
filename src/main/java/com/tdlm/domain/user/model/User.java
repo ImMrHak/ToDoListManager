@@ -1,5 +1,7 @@
 package com.tdlm.domain.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tdlm.domain.role.model.Role;
 import com.tdlm.domain.todo.model.ToDo;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -40,18 +41,21 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private Boolean isAdmin;
+    @ManyToMany(fetch = FetchType.LAZY)
+    protected List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ToDo> listOfToDo = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<ToDo> listOfCollabToDo = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        if(isAdmin) authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
+        Set<GrantedAuthority> authorities = new HashSet<>(roles);
+        for (Role role : roles) {
+            authorities.addAll(role.getPrivileges());
+        }
         return authorities;
     }
 }

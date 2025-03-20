@@ -5,8 +5,10 @@ import com.tdlm.domain.user.projection.UserProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface UserDomainRepository extends JpaRepository<User, Long> {
+public interface UserDomainRepository extends JpaRepository<User, UUID> {
     User findByUsername(String username);
     User findByEmail(String email);
 

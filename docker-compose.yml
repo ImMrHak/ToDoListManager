@@ -52,6 +52,36 @@ services:
     depends_on:
       - redis
 
+  prometheus:
+    container_name: prometheus-tdlm
+    image: prom/prometheus:latest
+    restart: always
+    ports:
+      - "9090:9090"  # Access Prometheus UI at http://localhost:9090
+    networks:
+      - tdlm-net
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Custom Prometheus config
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    container_name: grafana-tdlm
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3000:3000"  # Access Grafana UI at http://localhost:3000
+    networks:
+      - tdlm-net
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Change this in production!
+    depends_on:
+      - prometheus
+
 networks:
   tdlm-net:
     driver: bridge
@@ -59,3 +89,5 @@ networks:
 volumes:
   mysql_data:
   redis_data:
+  prometheus_data:
+  grafana_data:

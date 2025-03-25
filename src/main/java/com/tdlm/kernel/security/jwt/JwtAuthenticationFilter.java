@@ -1,5 +1,6 @@
 package com.tdlm.kernel.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,12 +15,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(
@@ -41,18 +46,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String tokenType = jwtService.extractClaim(jwt, claims -> claims.get("type", String.class));
                 boolean isRefreshToken = "refresh".equals(tokenType);
+                Instant expirationTime = jwtService.extractClaim(jwt, claims -> claims.getExpiration().toInstant());
+                boolean isTokenValid = jwtService.isTokenValid(jwt, userEmail);
 
                 if (isRefreshToken && !request.getServletPath().equals("/api/v1/auth/refresh")) {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Refresh token cannot be used to access resources\"}");
+                    sendJsonResponse(response, HttpServletResponse.SC_FORBIDDEN, "Invalid Token Usage", "Refresh token cannot be used to access resources", tokenType, expirationTime, userEmail);
                     return;
                 }
 
-                if (!isRefreshToken && !jwtService.isTokenValid(jwt, userEmail)) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Invalid or expired token\"}");
+                if (!isRefreshToken && !isTokenValid) {
+                    sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token", "Invalid or expired token", tokenType, expirationTime, userEmail);
                     return;
                 }
 
@@ -67,10 +70,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception exception) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Invalid or expired token\"}");
+            sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication Error", exception.getMessage(), null, null, null);
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
+    }
+
+    private void sendJsonResponse(HttpServletResponse response, int status, String error, String message, String tokenType, Instant expirationTime, String userEmail) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("error", error);
+        responseBody.put("message", message);
+        responseBody.put("tokenType", tokenType);
+        responseBody.put("expiresAt", expirationTime != null ? expirationTime.toString() : null);
+        responseBody.put("userEmail", userEmail);
+        responseBody.put("timestamp", Instant.now().toString());
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }

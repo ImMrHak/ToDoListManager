@@ -85,27 +85,29 @@ public class JwtService {
     public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
         Claims claims = extractAllClaims(token);
 
-        Map<String, Object> authoritiesClaims = claims.entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().startsWith("ROLE_") || entry.getKey().contains(":"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
-        return authoritiesClaims.entrySet()
-                .stream()
-                .flatMap(entry -> {
-                    if (entry.getValue() instanceof Map<?, ?> tempMap) {
-                        Map<String, Object> privilege = new HashMap<>();
-                        for (Map.Entry<?, ?> e : tempMap.entrySet()) {
-                            if (e.getKey() instanceof String) {
-                                privilege.put((String) e.getKey(), e.getValue());
+        // Extract roles (keys starting with "ROLE_")
+        claims.forEach((key, value) -> {
+            if (key.startsWith("ROLE_") && value instanceof Map<?, ?> roleData) {
+                authorities.add(new SimpleGrantedAuthority(key)); // Add role itself
+
+                // Extract privileges from role
+                Object privilegesObj = roleData.get("privileges");
+                if (privilegesObj instanceof List<?> privilegesList) {
+                    privilegesList.forEach(privilege -> {
+                        if (privilege instanceof Map<?, ?> privilegeData) {
+                            Object privilegeAuthority = privilegeData.get("authority");
+                            if (privilegeAuthority instanceof String authority) {
+                                authorities.add(new SimpleGrantedAuthority(authority));
                             }
                         }
-                        return privilege.containsKey("authority") ?
-                                Stream.of(new SimpleGrantedAuthority((String) privilege.get("authority"))) : Stream.empty();
-                    }
-                    return Stream.of(new SimpleGrantedAuthority(entry.getKey()));
-                })
-                .collect(Collectors.toList());
+                    });
+                }
+            }
+        });
+
+        return authorities;
     }
 
     private Claims extractAllClaims(String token) {

@@ -1,5 +1,6 @@
 package com.tdlm.kernel.exception;
 
+import com.tdlm.kernel.exception.task.TaskAlreadyExistException;
 import com.tdlm.kernel.exception.todo.ToDoAlreadyExistException;
 import com.tdlm.kernel.exception.user.UserAlreadyExistException;
 import com.tdlm.kernel.exception.user.UserNotFoundException;
@@ -37,4 +38,13 @@ public class GlobalExceptionHandler {
         // ADDING LOGS HERE FOR THE DATABASE !
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(TaskAlreadyExistException.class)
+    public ResponseEntity<Object> taskAlreadyExistException(TaskAlreadyExistException e) {
+        Map<String, Object> response = ResponseWrapper.error("Task name already exist", HttpStatus.CONFLICT);
+        // ADDING LOGS HERE FOR THE DATABASE !
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+
 }

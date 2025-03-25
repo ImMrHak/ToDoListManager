@@ -66,7 +66,7 @@ public class TdlmApplication {
             user.getAuthorities().forEach(a -> System.out.println(a.getAuthority()));
 
             // Create 50 ToDo entries for the user immrhak
-            for (int i = 1; i <= 15000; i++) {
+            for (int i = 1; i <= 10; i++) {
                 ToDo toDo = ToDo.builder()
                         .title("ToDo " + i)
                         .description("Description for ToDo " + i)

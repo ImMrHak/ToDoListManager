@@ -1,7 +1,7 @@
 package com.tdlm.business.todo.service;
 
 import com.tdlm.business.todo.mapper.TodoMapper;
-import com.tdlm.business.todo.record.request.CreateToDoList;
+import com.tdlm.business.todo.record.request.CreateToDoListDTO;
 import com.tdlm.business.todo.record.request.GetMyToDoListDTO;
 import com.tdlm.business.todo.record.response.ToDoPagedResponseDTO;
 import com.tdlm.business.todo.record.response.ToDoResponseDTO;
@@ -35,13 +35,13 @@ public class ToDoServiceImp implements ToDoService {
     }
 
     @Override
-    public ToDoResponseDTO createMyToDoList(CreateToDoList createToDoList) {
-        if(toDoDomainRepository.countByTitleAndOwner_Username(createToDoList.title(), createToDoList.userName()) > 0) throw new ToDoAlreadyExistException("ToDoList Already Exist With The Same Name");
+    public ToDoResponseDTO createMyToDoList(CreateToDoListDTO createToDoListDTO) {
+        if(toDoDomainRepository.countByTitleAndOwner_Username(createToDoListDTO.title(), createToDoListDTO.userName()) > 0) throw new ToDoAlreadyExistException("ToDoList Already Exist With The Same Name");
 
         ToDo newToDo = ToDo.builder()
-                .title(createToDoList.title())
-                .description(createToDoList.description())
-                .owner(userDomainRepository.findByUsername(createToDoList.userName()))
+                .title(createToDoListDTO.title())
+                .description(createToDoListDTO.description())
+                .owner(userDomainRepository.findByUsername(createToDoListDTO.userName()))
                 .build();
 
         return todoMapper.toToDoResponseDTO(toDoDomainRepository.save(newToDo));
